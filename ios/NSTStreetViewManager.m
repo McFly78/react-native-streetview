@@ -162,10 +162,24 @@ RCT_CUSTOM_VIEW_PROPERTY(coordinate, CLLocationCoordinate2D /*CLLocationCoordina
   // NM: Extract the {longitude, latitude} value from the json and create a CLLocationCoordinate2D via RCTConvert 
   [view moveNearCoordinate:[RCTConvert CLLocationCoordinate2D:json]
                     radius: radius
-                    //source: kGMSPanoramaSourceOutside // On ne recherche que les panorama à l'extérieur -> attention à bien mettre le meme paramètre que l'API https://maps.googleapis.com/maps/api/streetview/metadata? dans MapScreen
+                    source: kGMSPanoramaSourceOutside // On ne recherche que les panorama à l'extérieur -> attention à bien mettre le meme paramètre que l'API https://maps.googleapis.com/maps/api/streetview/metadata? dans MapScreen
                     // Bizzare ca n'a pas l'air de fonctionner ce filtre
                     // En fait si mais c'est bizzarre car ca filtre par ex le point de vue StreetView au milieu du bassin de la sourderie
                     // et ca ne filtre pas le le StreetView dans le chateau de Versailles par ex donc je l'enlève.
+                    // Bon en fait dans la doc ils disent: only returns panoramas where it's possible to determine whether they're indoors or outdoors. For example, PhotoSpheres are not returned because it's unknown whether they are indoors or outdoors.//
+                    // Donc ca filtre pas mal de panoramas non officiels réalisés par des personnes.
+                    // Et il faut les filtrer au maximum car j'ai remarqué par ex à la tour eiffeil que l'orientation n'est pas bonne !! et donc le parcours du soleil n'est pas bon !!!!!!
+                    // 
+                    /* https://issuetracker.google.com/issues/141726330
+                    -> lui dit de filtrer sur "OutDoor" car come indiqué dans la doc ca permet d'enlever pas mal de panorama non official de Google: only returns panoramas where it's possible to determine whether they're indoors or outdoors. For example, PhotoSpheres are not returned because it's unknown whether they are indoors or outdoors.
+                    -> Google a clôturé le ticket 
+                    -> en fait Google a maintenant ajouté une option source "GOOGLE" en plus de "DEFAULT" et "OUTDOOR" 
+                    https://developers.google.com/maps/documentation/javascript/reference/street-view-service
+                    sauf que c'est uniquement pour l'API Javascript et pas l'API Web ni le SDK IOS !!!!
+                    Et en plus dans la doc officielle ils ne parlent meme pas de ce paramètre !!!! Et en plus le paramètre source est maintenant deprecated et est remplacé par sources et ils n'en parlent pas non plus dans la doc officielle.
+                    https://developers.google.com/maps/documentation/javascript/streetview
+                    => Donc pour le moment je laisse ce paramètre en attendant qu'une option officielle pour filtrer uniquement les panoramas officiel Google soit mis en place
+                    */
                     ];
 }
 
